@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billable Hours Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-6 max-w-3xl">
+        <h1 class="text-3xl font-bold text-center mb-6">Billable Hours Tracker</h1>
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <form id="hoursForm" class="space-y-4">
+                <div>
+                    <label for="project" class="block text-sm font-medium text-gray-700">Project Name</label>
+                    <input type="text" id="project" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Research Consultation" required>
+                </div>
+                <div>
+                    <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+                    <input type="date" id="date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+                </div>
+                <div>
+                    <label for="hours" class="block text-sm font-medium text-gray-700">Hours Worked</label>
+                    <input type="number" id="hours" min="0" step="0.25" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 2.5" required>
+                </div>
+                <div>
+                    <label for="rate" class="block text-sm font-medium text-gray-700">Hourly Rate ($)</label>
+                    <input type="number" id="rate" min="0" step="0.01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., 75.00" required>
+                </div>
+                <div>
+                    <label for="description" class="block text-sm font-medium text-gray-700">Description of Work</label>
+                    <textarea id="description" rows="4" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" placeholder="e.g., Prepared literature review for grant proposal"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700">Add Entry</button>
+            </form>
+            <div id="entries" class="mt-6">
+                <h2 class="text-xl font-semibold mb-4">Billable Hours Log</h2>
+                <table class="w-full border-collapse">
+                    <thead>
+                        <tr class="bg-gray-200">
+                            <th class="border p-2">Project</th>
+                            <th class="border p-2">Date</th>
+                            <th class="border p-2">Hours</th>
+                            <th class="border p-2">Rate ($)</th>
+                            <th class="border p-2">Total ($)</th>
+                            <th class="border p-2">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="entryTable"></tbody>
+                </table>
+                <div class="mt-4 text-right">
+                    <p class="font-semibold">Total Billable Amount: $<span id="totalAmount">0.00</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const form = document.getElementById('hoursForm');
+        const entryTable = document.getElementById('entryTable');
+        const totalAmount = document.getElementById('totalAmount');
+        let entries = [];
+        let total = 0;
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const project = document.getElementById('project').value;
+            const date = document.getElementById('date').value;
+            const hours = parseFloat(document.getElementById('hours').value);
+            const rate = parseFloat(document.getElementById('rate').value);
+            const description = document.getElementById('description').value;
+
+            const entryTotal = hours * rate;
+            total += entryTotal;
+
+            const entry = { project, date, hours, rate, entryTotal, description };
+            entries.push(entry);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="border p-2">${project}</td>
+                <td class="border p-2">${date}</td>
+                <td class="border p-2">${hours.toFixed(2)}</td>
+                <td class="border p-2">${rate.toFixed(2)}</td>
+                <td class="border p-2">${entryTotal.toFixed(2)}</td>
+                <td class="border p-2">${description || 'N/A'}</td>
+            `;
+            entryTable.appendChild(row);
+            totalAmount.textContent = total.toFixed(2);
+
+            form.reset();
+        });
+    </script>
+</body>
+</html>
